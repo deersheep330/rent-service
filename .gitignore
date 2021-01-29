@@ -1,29 +1,21 @@
-bin/
-screenshots/
-junit/
-out/
-.gradle/
-build/
-
-ChromeTestResult.csv
-IETestResult.csv
-lastTestResult.properties
-test-result-3000.csv
-test-result-45000.csv
-
-junit*.properties
-
-*.classpath
-.settings
-.project
-.settings/
-
-# Editor directories and files
+# editor directories and files
 .idea
 .vscode
 *.suo
 *.ntvs*
 *.njsproj
 *.sln
+*.icloud
 *.iml
-/.metadata/
+
+# windows virtualenv
+Lib
+Scripts
+pyvenv.cfg
+
+# python
+__pycache__
+*.pyc
+
+# properties file
+*.ini
