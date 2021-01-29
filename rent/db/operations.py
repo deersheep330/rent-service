@@ -31,7 +31,11 @@ def create_all_tables_from_orm(engine):
     print('try to create tables:')
     for table in Base.metadata.sorted_tables:
         print(table)
-    Base.metadata.create_all(engine)
+    res = Base.metadata.create_all(engine)
+    if res:
+        print(f'create tables success: {res}')
+    else:
+        print('tables already exist')
 
 
 def start_session(engine):
