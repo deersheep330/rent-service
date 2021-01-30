@@ -22,4 +22,5 @@ git merge <pull-request-url>
 git push origin master
 git branch -d <branch>
 git push origin :<branch>
+git remote update -p ?
 ```
