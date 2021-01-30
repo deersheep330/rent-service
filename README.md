@@ -13,5 +13,13 @@ docker run --name adminer --link mysql:mydb -p 7890:8080 -d adminer
 ##### git flow
 ```
 git checkout -b <branch>
-
+git add .
+git commit -m "<message>"
+git push origin <branch>
+hub pull-request -m "<message>"
+git checkout master
+git merge <pull-request-url>
+git push origin master
+git branch -d <branch>
+git push origin :<branch>
 ```
