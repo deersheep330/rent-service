@@ -9,8 +9,14 @@ from webdriver_manager.chrome import ChromeDriverManager
 class RentParser():
 
     def __init__(self):
-        self.url = 'https://rent.591.com.tw/'
+        options = webdriver.ChromeOptions()
+        # options.add_argument('--headless')
+        # options.add_argument('--no-sandbox')
+        self.driver = webdriver.Chrome(executable_path=ChromeDriverManager().install(), options=options)
+        self.url = 'https://rent.591.com.tw/?kind=0&region=1'
         self.elements = {
+            'area_close': "//*[contains(@class, 'area-box-close')]",
+            'credit_close': "//*[contains(@class, 'accreditPop')]//*[contains(@class, 'close')]",
             'section': "//*[contains(@google-data-stat, '按鄉鎮選擇')]",
             'shilin': "//label//span[contains(text(), '士林區')]",
             'shilin_checked': "//*[contains(@class, 'checkTips')]//span[contains(text(), '士林區')]",
@@ -31,15 +37,26 @@ class RentParser():
         self.plain_max = '18'
         self.items = []
 
+    def __click_and_wait(self, target, expected):
+        success = False
+        while success is not True:
+            try:
+                _target = self.driver.find_element_by_xpath(self.elements[target])
+                _target.click()
+                WebDriverWait(self.driver, 15).until(
+                    expected_conditions.presence_of_element_located((By.XPATH, self.elements[expected]))
+                )
+                success = True
+            except Exception as e:
+                print(e)
+
     def parse(self):
         print(f'==> parse page: {self.url}')
-        options = webdriver.ChromeOptions()
-        #options.add_argument('--headless')
-        #options.add_argument('--no-sandbox')
 
-        driver = webdriver.Chrome(executable_path=ChromeDriverManager().install(), options=options)
+        self.driver.get(self.url)
 
-        driver.get(self.url)
+        # select section
+        self.__click_and_wait('section', 'shilin')
         '''
         WebDriverWait(driver, 15).until(
             expected_conditions.presence_of_element_located((By.XPATH, self.xpath))
@@ -54,4 +71,4 @@ class RentParser():
                 self.list.append(arr[0][1:-1])
             #print(self.list[-1])
         '''
-        driver.quit()
+        self.driver.quit()
