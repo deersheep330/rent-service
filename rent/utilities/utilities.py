@@ -41,3 +41,7 @@ def get_variable(var):
 
 def get_db_connection_url():
     return get_variable('DB_CONNECTION_URL')
+
+
+def get_line_token():
+    return get_variable('LINE_TOKEN')
