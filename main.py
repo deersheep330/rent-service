@@ -7,3 +7,6 @@ if __name__  == '__main__':
     #create_all_tables_from_orm(engine)
     rent_parser = RentParser()
     rent_parser.parse()
+    new_items = rent_parser.get_new_items_url()
+    print(new_items)
+

@@ -1,4 +1,4 @@
-from sqlalchemy.dialects.mysql import insert
+from sqlalchemy.dialects.mysql import insert as __insert
 from sqlalchemy import create_engine as __create_engine
 from sqlalchemy.orm import sessionmaker
 from sqlalchemy.dialects import mysql
@@ -61,7 +61,7 @@ def compile_query(query):
 def insert(session, model, _dict):
     table = model.__table__
 
-    stmt = insert(table).values(_dict)
+    stmt = __insert(table).values(_dict)
 
     print(compile_query(stmt))
     res = session.execute(stmt)

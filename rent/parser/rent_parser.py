@@ -1,17 +1,22 @@
-import re
-from time import sleep
-
 from selenium import webdriver
 from selenium.common.exceptions import NoSuchElementException
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support import expected_conditions
 from selenium.webdriver.support.wait import WebDriverWait
+from sqlalchemy import exists
 from webdriver_manager.chrome import ChromeDriverManager
+
+from rent.db import create_engine_from_url, start_session, insert
+from rent.models import House
+from rent.utilities import get_db_connection_url
 
 
 class RentParser():
 
     def __init__(self):
+
+        self.engine = create_engine_from_url(get_db_connection_url())
+        self.session = start_session(self.engine)
 
         self.wait_timeout = 10
         self.click_retry_timeout = 3
@@ -19,8 +24,8 @@ class RentParser():
         options = webdriver.ChromeOptions()
         prefs = {'profile.default_content_setting_values.notifications': 2}
         options.add_experimental_option('prefs', prefs)
-        # options.add_argument('--headless')
-        # options.add_argument('--no-sandbox')
+        options.add_argument('--headless')
+        options.add_argument('--no-sandbox')
         self.driver = webdriver.Chrome(executable_path=ChromeDriverManager().install(), options=options)
         self.url = 'https://rent.591.com.tw/?kind=0&region=1'
         self.elements = {
@@ -47,6 +52,19 @@ class RentParser():
         self.plain_min = '8'
         self.plain_max = '18'
         self.items = []
+        self.new_items = []
+
+    def __is_item_exist_in_db(self, item):
+        return self.session.query(exists().where(House.id == item)).scalar()
+
+    def get_new_items_url(self):
+        if len(self.items) == len(self.new_items):
+            print('first time ...')
+            return []
+        new_items_url = []
+        for new_item in self.new_items:
+            new_items_url.append(f'https://rent.591.com.tw/rent-detail-{new_item}.html')
+        return new_items_url
 
     def __is_exist(self, target):
         try:
@@ -88,7 +106,15 @@ class RentParser():
     def __get_items(self):
         items_per_page = self.driver.find_elements_by_xpath(self.elements['items'])
         for item in items_per_page:
-            self.items.append(item.get_attribute('data-bind'))
+            id = item.get_attribute('data-bind')
+            if self.__is_item_exist_in_db(id):
+                pass
+            else:
+                insert(self.session, House, {'id': id})
+                self.session.commit()
+                self.new_items.append(id)
+                print(f'new item found: {id}')
+            self.items.append(id)
         print(self.items)
 
     def parse(self):
