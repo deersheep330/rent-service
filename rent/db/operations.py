@@ -13,7 +13,16 @@ def create_engine_from_url(connection_url):
                                            pool_pre_ping=True,
                                            pool_recycle=3600 * 7,
                                            echo=False)
-    create_engine.engine.execute('SET GLOBAL max_allowed_packet=67108864;')
+    # Amazon does not give you SUPER privileges on an RDS instance
+    # (to prevent you from breaking things like replication accidentally).
+    # To configure group_concat_max_len, use an RDS parameter group,
+    # which allows you to configure a group of settings to apply to an instance.
+    # https://stackoverflow.com/questions/31147206/amazon-rds-unable-to-execute-set-global-command
+    try:
+        create_engine.engine.execute('SET GLOBAL max_allowed_packet=67108864;')
+    except Exception as e:
+        print(e)
+
     return create_engine.engine
 
 
