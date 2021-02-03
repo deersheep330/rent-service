@@ -16,7 +16,7 @@ COPY ./rent ./rent
 COPY ./main.py .
 
 # Run the command on container startup
-CMD cron && tail -f /var/log/cron.log
+CMD python main.py && cron && tail -f /var/log/cron.log
 # CMD ["cron", "-f"]
 
 #Quick note about a gotcha:
