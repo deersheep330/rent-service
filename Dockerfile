@@ -1,5 +1,7 @@
 FROM deersheep330/python-chrome-crontab
 
+ENV TZ=Asia/Taipei
+
 # Add crontab file in the cron directory
 ADD crontab /etc/cron.d/hello-cron
 
