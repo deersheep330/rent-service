@@ -1,2 +1,2 @@
-0 9,15,21 * * * root . $HOME/.bash_profile; /usr/local/bin/python /home/app/main.py >> /var/log/cron.log 2>&1
+0 9,15,21 * * * root . $HOME/.profile; /usr/local/bin/python /home/app/main.py >> /var/log/cron.log 2>&1
 # Don't remove the empty line at the end of this file. It is required to run the cron job
