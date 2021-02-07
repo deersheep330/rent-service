@@ -16,9 +16,10 @@ RUN pip install -r requirements.txt
 
 COPY ./rent ./rent
 COPY ./main.py .
+COPY ./script.sh .
 
 # Run the command on container startup
-CMD python main.py && cron && tail -f /var/log/cron.log
+CMD /bin/bash script.sh && cron && tail -f /var/log/cron.log
 # CMD ["cron", "-f"]
 
 #Quick note about a gotcha:
