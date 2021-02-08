@@ -19,7 +19,7 @@ COPY ./main.py .
 COPY ./script.sh .
 
 # Run the command on container startup
-CMD /bin/bash script.sh && cron && tail -f /var/log/cron.log
+CMD /bin/bash /home/app/script.sh && cron && tail -f /var/log/cron.log
 # CMD ["cron", "-f"]
 
 #Quick note about a gotcha:
