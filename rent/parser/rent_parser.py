@@ -24,8 +24,8 @@ class RentParser():
         options = webdriver.ChromeOptions()
         prefs = {'profile.default_content_setting_values.notifications': 2}
         options.add_experimental_option('prefs', prefs)
-        #options.add_argument('--headless')
-        #options.add_argument('--no-sandbox')
+        options.add_argument('--headless')
+        options.add_argument('--no-sandbox')
         self.driver = webdriver.Chrome(executable_path=ChromeDriverManager().install(), options=options)
         self.url = 'https://rent.591.com.tw/?kind=0&region=1'
         self.elements = {
