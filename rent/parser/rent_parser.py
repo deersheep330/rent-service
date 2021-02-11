@@ -13,7 +13,7 @@ from rent.utilities import get_db_connection_url
 
 class RentParser():
 
-    def __init__(self):
+    def __init__(self, rent_type='suite'):
 
         self.engine = create_engine_from_url(get_db_connection_url())
         self.session = start_session(self.engine)
@@ -24,8 +24,8 @@ class RentParser():
         options = webdriver.ChromeOptions()
         prefs = {'profile.default_content_setting_values.notifications': 2}
         options.add_experimental_option('prefs', prefs)
-        options.add_argument('--headless')
-        options.add_argument('--no-sandbox')
+        #options.add_argument('--headless')
+        #options.add_argument('--no-sandbox')
         self.driver = webdriver.Chrome(executable_path=ChromeDriverManager().install(), options=options)
         self.url = 'https://rent.591.com.tw/?kind=0&region=1'
         self.elements = {
@@ -34,8 +34,14 @@ class RentParser():
             'section': "//*[contains(@google-data-stat, '按鄉鎮選擇')]",
             'shilin': "//label//span[contains(text(), '士林區')]",
             'shilin_checked': "//*[contains(@class, 'checkTips')]//span[contains(text(), '士林區')]",
-            'type': "//*[contains(@class, 'search-rentType-span') and contains(@google-data-stat, '獨立套房')]",
-            'type_checked': "//*[contains(@class, 'search-rentType-span') and contains(@class, 'select') and contains(@google-data-stat, '獨立套房')]",
+            'beitou': "//label//span[contains(text(), '北投區')]",
+            'beitou_checked': "//*[contains(@class, 'checkTips')]//span[contains(text(), '北投區')]",
+            'zhongshan': "//label//span[contains(text(), '中山區')]",
+            'zhongshan_checked': "//*[contains(@class, 'checkTips')]//span[contains(text(), '中山區')]",
+            'suite': "//*[contains(@class, 'search-rentType-span') and contains(@google-data-stat, '獨立套房')]",
+            'suite_checked': "//*[contains(@class, 'search-rentType-span') and contains(@class, 'select') and contains(@google-data-stat, '獨立套房')]",
+            'flat': "//*[contains(@class, 'search-rentType-span') and contains(@google-data-stat, '整層住家')]",
+            'flat_checked': "//*[contains(@class, 'search-rentType-span') and contains(@class, 'select') and contains(@google-data-stat, '整層住家')]",
             'price_min': "//input[@id='rentPrice-min']",
             'price_max': "//input[@id='rentPrice-max']",
             'price_submit': "//*[contains(@class, 'rentPrice-btn') and not(contains(@style, 'none'))]",
@@ -47,10 +53,13 @@ class RentParser():
             'loading_now': "//*[@rel='loading' and not(contains(@style, 'none'))]",
             'loading_completed': "//*[@rel='loading' and contains(@style, 'none')]"
         }
+
+        self.rent_type = rent_type
+
         self.price_min = '10000'
         self.price_max = '20000'
-        self.plain_min = '8'
-        self.plain_max = '18'
+        self.plain_min = '10'
+        self.plain_max = '35'
         self.items = []
         self.new_items = []
 
@@ -131,9 +140,16 @@ class RentParser():
         # select section
         self.__click_and_wait('section', 'shilin')
         self.__click_and_wait('shilin', 'shilin_checked')
+        self.__click_and_wait('beitou', 'beitou_checked')
+        self.__click_and_wait('zhongshan', 'zhongshan_checked')
 
         # select type
-        self.__click_and_wait('type', 'type_checked')
+        if self.rent_type == 'suite':
+            self.__click_and_wait('suite', 'suite_checked')
+        elif self.rent_type == 'flat':
+            self.__click_and_wait('flat', 'flat_checked')
+        else:
+            raise Exception(f'Unsupported Rent Type: {self.rent_type}')
 
         # input price
         self.__send_keys('price_min', self.price_min)

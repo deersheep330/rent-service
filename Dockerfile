@@ -19,7 +19,7 @@ COPY ./main.py .
 COPY ./cron_entrypoint.sh .
 
 # Run the command on container startup
-CMD /bin/bash ./cron_entrypoint.sh && tail -f /var/log/cron.log
+CMD /usr/local/bin/python /home/app/main.py && /bin/bash ./cron_entrypoint.sh && tail -f /var/log/cron.log
 # CMD ["cron", "-f"]
 
 #Quick note about a gotcha:
