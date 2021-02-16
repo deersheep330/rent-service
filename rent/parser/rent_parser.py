@@ -97,7 +97,9 @@ class RentParser():
 
     def __click_and_wait(self, target, expected):
         success = False
-        while success is not True:
+        retry = 0
+        max_retry = 10
+        while success is not True and retry < max_retry:
             try:
                 _target = self.driver.find_element_by_xpath(self.elements[target])
                 _target.click()
@@ -107,6 +109,7 @@ class RentParser():
                 success = True
             except Exception as e:
                 print(e)
+            retry += 1
 
     def __send_keys(self, target, keys):
         _target = self.driver.find_element_by_xpath(self.elements[target])
