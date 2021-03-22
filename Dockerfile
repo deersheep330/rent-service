@@ -17,6 +17,7 @@ RUN pip install -r requirements.txt
 COPY ./rent ./rent
 COPY ./main.py .
 COPY ./cron_entrypoint.sh .
+COPY ./wait-for-it.sh .
 # COPY ./variables.ini .
 
 # Run the command on container startup

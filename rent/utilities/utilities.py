@@ -4,7 +4,7 @@ from configparser import ConfigParser
 
 def read_variable_from_config(var):
     config = ConfigParser()
-    config.read('variables.ini')
+    config.read_file(open('variables.ini'))
     res = config['DEFAULT'][var]
     if res is None:
         raise Exception(f'Cannot get {var} from ini file')
