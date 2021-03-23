@@ -1,3 +1,5 @@
+import datetime
+
 from selenium import webdriver
 from selenium.common.exceptions import NoSuchElementException
 from selenium.webdriver.common.by import By
@@ -6,7 +8,7 @@ from selenium.webdriver.support.wait import WebDriverWait
 from sqlalchemy import exists
 from webdriver_manager.chrome import ChromeDriverManager
 
-from rent.db import create_engine_from_url, start_session, insert
+from rent.db import create_engine_from_url, start_session, insert, delete_older_than
 from rent.models import House
 from rent.utilities import get_db_connection_url
 
@@ -62,6 +64,9 @@ class RentParser():
         self.plain_max = '35'
         self.items = []
         self.new_items = []
+
+        count = delete_older_than(self.session, House, House.date, datetime.now().date() - datetime.timedelta(days=60))
+        print(f'delete {count} old records ...')
 
     def __is_item_exist_in_db(self, item):
         return self.session.query(exists().where(House.id == item)).scalar()

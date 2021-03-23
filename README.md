@@ -31,6 +31,8 @@ export DB_CONNECTION_URL="root:admin@${DB_HOST}/mydb"
 
 docker run -it -e DB_CONNECTION_URL=$DB_CONNECTION_URL rent
 
+pytest -v --junitxml=test-results/junit.xml test.py
+
 ```
 
 ##### start mysql

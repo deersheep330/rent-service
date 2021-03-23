@@ -22,3 +22,6 @@ __pycache__
 
 # properties file
 *.ini
+
+# test results
+test-results
