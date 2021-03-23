@@ -28,6 +28,8 @@ docker run --name adminer --link mysql:mydb -p 7890:8080 -d adminer
 export NAME=VALUE
 export DB_CONNECTION_URL="root:admin@$(hostname -I | tr -d "[:blank:]"):3306/mydb"
 
+docker run -it -e DB_CONNECTION_URL=$DB_CONNECTION_URL rent
+
 ```
 
 ##### start mysql
