@@ -1,4 +1,4 @@
-import datetime
+from datetime import datetime, timedelta
 
 from selenium import webdriver
 from selenium.common.exceptions import NoSuchElementException
@@ -65,7 +65,7 @@ class RentParser():
         self.items = []
         self.new_items = []
 
-        count = delete_older_than(self.session, House, House.date, datetime.now().date() - datetime.timedelta(days=60))
+        count = delete_older_than(self.session, House, House.date, datetime.now().date() - timedelta(days=60))
         print(f'delete {count} old records ...')
 
     def __is_item_exist_in_db(self, item):
