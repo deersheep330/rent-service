@@ -13,4 +13,4 @@ COPY ./test.py .
 COPY ./wait-for-it.sh .
 
 # Run the command on container startup
-CMD ./wait-for-it.sh $DB_HOST && pytest test.py
+CMD ./wait-for-it.sh $DB_HOST && pytest -v --junitxml=test-results/junit.xml test.py
