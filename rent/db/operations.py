@@ -101,3 +101,12 @@ def upsert(session, model, rows):
 
     print(f'{rowcount} row(s) matched')
     return rowcount
+
+
+def delete_older_than(session, model, date_field, date_older_than):
+    count = session.query(model).filter(date_field < date_older_than).delete()
+    return count
+
+
+def count(session, model):
+    return session.query(model).count()

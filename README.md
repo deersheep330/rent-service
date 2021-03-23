@@ -26,7 +26,8 @@ docker run --name adminer --link mysql:mydb -p 7890:8080 -d adminer
 # can login to console only after mysql initialized
 
 export NAME=VALUE
-export DB_CONNECTION_URL="root:admin@$(hostname -I | tr -d "[:blank:]"):3306/mydb"
+export DB_HOST="$(hostname -I | tr -d "[:blank:]"):3306"
+export DB_CONNECTION_URL="root:admin@${DB_HOST}/mydb"
 
 docker run -it -e DB_CONNECTION_URL=$DB_CONNECTION_URL rent
 
