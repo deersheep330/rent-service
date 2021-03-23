@@ -1,0 +1,16 @@
+FROM deersheep330/python-chrome-crontab
+
+ENV TZ=Asia/Taipei
+
+WORKDIR /home/app
+
+COPY requirements.txt .
+
+RUN pip install -r requirements.txt
+
+COPY ./rent ./rent
+COPY ./test.py .
+COPY ./wait-for-it.sh .
+
+# Run the command on container startup
+CMD ./wait-for-it.sh $DB_HOST && pytest test.py

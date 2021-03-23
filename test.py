@@ -32,6 +32,7 @@ def test_parsing_website():
     flat_parser = RentParser(rent_type='flat')
     flat_parser.parse()
     new_items = flat_parser.new_items
-    delete_older_than(session, House, House.date, datetime.now().date())
+    count = delete_older_than(session, House, House.date, datetime.now().date())
+    print(f'delete {count} old records')
     session.commit()
     assert len(new_items) > 0

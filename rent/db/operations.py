@@ -104,7 +104,7 @@ def upsert(session, model, rows):
 
 
 def delete_older_than(session, model, date_field, date_older_than):
-    count = session.query(model).filter(date_field < date_older_than).delete()
+    count = session.query(model).filter(date_field <= date_older_than).delete()
     return count
 
 

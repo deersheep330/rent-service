@@ -33,6 +33,10 @@ docker run -it -e DB_CONNECTION_URL=$DB_CONNECTION_URL rent
 
 pytest -v --junitxml=test-results/junit.xml test.py
 
+
+docker build -f Dockerfile-test -t rent-test .
+docker run -it -v test-results:/home/app/test-results -e DB_HOST="$(hostname -I | tr -d "[:blank:]"):3306" -e DB_CONNECTION_URL="root:admin@${DB_HOST}/mydb" rent-test
+
 ```
 
 ##### start mysql
