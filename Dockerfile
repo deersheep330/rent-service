@@ -17,10 +17,11 @@ RUN pip install -r requirements.txt
 COPY ./rent ./rent
 COPY ./main.py .
 COPY ./cron_entrypoint.sh .
-# COPY ./variables.ini .
+COPY ./wait-for-it.sh .
+# COPY ./__variables.ini .
 
 # Run the command on container startup
-CMD /usr/local/bin/python /home/app/main.py && /bin/bash ./cron_entrypoint.sh && tail -f /var/log/cron.log
+CMD echo $DB_CONNECTION_URL && /usr/local/bin/python /home/app/main.py && /bin/bash ./cron_entrypoint.sh && tail -f /var/log/cron.log
 # CMD ["cron", "-f"]
 
 #Quick note about a gotcha:

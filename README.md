@@ -1,5 +1,44 @@
 # Rent Service
 
+#### local run
+```
+sudo apt install python-is-python3
+
+./wait-for-it.sh localhost:3306
+
+python -m venv .
+source bin/activate
+
+pip install -r requirements.txt
+
+docker run -it --name mysql -p 3306:3306 -e MYSQL_ROOT_PASSWORD=admin -e MYSQL_DATABASE=mydb -d -t mysql:8.0.23
+# db connection url = root:admin@127.0.0.1:3306/mydb
+```
+python -m venv .
+cd Scripts
+activate.bat
+cd ..
+
+docker run -it --name mysql -p 3306:3306 -e MYSQL_ROOT_PASSWORD=admin -e MYSQL_DATABASE=mydb -d -t mysql:8.0.23
+# db connection url = root:admin@localhost:3306/mydb
+
+docker run --name adminer --link mysql:mydb -p 7890:8080 -d adminer
+# can login to console only after mysql initialized
+
+export NAME=VALUE
+export DB_HOST="$(hostname -I | tr -d "[:blank:]"):3306"
+export DB_CONNECTION_URL="root:admin@${DB_HOST}/mydb"
+
+docker run -it -e DB_CONNECTION_URL=$DB_CONNECTION_URL rent
+
+pytest -v --junitxml=test-results/junit.xml test.py
+
+
+docker build -f Dockerfile-test -t rent-test .
+docker run -it -v "$(pwd)/test-results":/home/app/test-results -e DB_HOST="$(hostname -I | tr -d "[:blank:]"):3306" -e DB_CONNECTION_URL="root:admin@${DB_HOST}/mydb" rent-test
+
+```
+
 ##### start mysql
 ```
 docker run -it --name mysql -p 3306:3306 -e MYSQL_ROOT_PASSWORD=admin -e MYSQL_DATABASE=mydb -d -t mysql:8.0.23

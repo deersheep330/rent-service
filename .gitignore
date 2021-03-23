@@ -8,7 +8,10 @@
 *.icloud
 *.iml
 
-# windows virtualenv
+# virtualenv
+bin
+lib64
+share
 Lib
 Scripts
 pyvenv.cfg
@@ -19,3 +22,6 @@ __pycache__
 
 # properties file
 *.ini
+
+# test results
+test-results
