@@ -6,8 +6,8 @@ jobs:
     steps:
       - checkout
       - run: docker run -it --name mysql -p 3306:3306 -e MYSQL_ROOT_PASSWORD=admin -e MYSQL_DATABASE=mydb -d -t mysql:8.0.23
-      - run: export DB_HOST="$(ip -f inet addr show docker0 | grep -Po 'inet \K[\d.]+'):3306" >> $BASH_ENV
-      - run: export DB_CONNECTION_URL="root:admin@${DB_HOST}/mydb" >> $BASH_ENV
+      - run: echo 'export DB_HOST="$(ip -f inet addr show docker0 | grep -Po \"inet \K[\d.]+\"):3306"' >> $BASH_ENV
+      - run: echo 'export DB_CONNECTION_URL="root:admin@${DB_HOST}/mydb"' >> $BASH_ENV
       - run: echo $DB_HOST
       - run: echo $DB_CONNECTION_URL
       - run: docker build -f Dockerfile-test -t rent-test .
