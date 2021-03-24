@@ -5,6 +5,6 @@ jobs:
       image: ubuntu-2004:202010-01
     steps:
       - checkout
-      - run: ifconfig
+      - run: ip -4 addr
       - run: hostname -I
       - run: ls -l
