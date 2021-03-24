@@ -5,6 +5,6 @@ jobs:
       image: ubuntu-2004:202010-01
     steps:
       - checkout
-      - run: ip -4 addr
+      - run: ip -f inet addr show docker0 | grep -Po 'inet \K[\d.]+'
       - run: hostname -I
       - run: ls -l
