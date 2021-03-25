@@ -42,6 +42,7 @@ jobs:
           name: test deploy
           command: |
             echo "test deploy success"
+            echo $AWS_ACCESS_KEY_ID
 
 workflows:
   version: 2.1
@@ -49,6 +50,8 @@ workflows:
     jobs:
       - test
       - deploy:
+          context:
+            - AWS_CONFIG
           requires:
             - test
           filters:
