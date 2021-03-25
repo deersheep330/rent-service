@@ -1,5 +1,9 @@
 version: 2.1
 
+orbs:
+  aws-ecr: circleci/aws-ecr@6.15
+  aws-ecs: circleci/aws-ecs@2.0.0
+
 jobs:
   test:
     machine:
@@ -43,6 +47,17 @@ jobs:
           command: |
             echo "test deploy success"
             echo $AWS_ACCESS_KEY_ID
+      - aws-ecr/build-and-push-image:
+          account-url: $AWS_ECR_ACCOUNT_URL
+          region: $AWS_REGION
+          repo: "repo-svc-rent"
+          tag: $CIRCLE_SHA1
+      - aws-ecs/deploy-service-update:
+          cluster-name: "ecs-cluster-dev-stock"
+          container-image-name-updates: 'container=svc-rent-service,tag=${CIRCLE_SHA1}'
+          family: 'task-svc-rent'
+          requires:
+            - aws-ecr/build-and-push-image
 
 workflows:
   version: 2.1
@@ -57,4 +72,5 @@ workflows:
           filters:
             branches:
               only:
-                - master
+                - test-aws-deploy
+#                - master
