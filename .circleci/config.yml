@@ -28,3 +28,7 @@ jobs:
           name: run test
           command: |
             docker run -it -v "$(pwd)/test-results":/home/app/test-results -e DB_HOST=$DB_HOST -e DB_CONNECTION_URL=$DB_CONNECTION_URL rent-test
+      - store_test_results:
+          path: test-results
+      - store_artifacts:
+          path: test-results
