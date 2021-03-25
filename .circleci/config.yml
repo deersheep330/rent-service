@@ -48,8 +48,8 @@ jobs:
             echo "test deploy success"
             echo $AWS_ACCESS_KEY_ID
       - aws-ecr/build-and-push-image:
-          account-url: $AWS_ECR_ACCOUNT_URL
-          region: $AWS_REGION
+          account-url: '${AWS_ECR_ACCOUNT_URL}'
+          region: '${AWS_REGION}'
           repo: "repo-svc-rent"
           tag: $CIRCLE_SHA1
       - aws-ecs/deploy-service-update:
