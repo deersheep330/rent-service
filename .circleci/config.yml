@@ -37,40 +37,34 @@ jobs:
           path: test-results
       - store_artifacts:
           path: test-results
-  deploy:
-    machine:
-      image: ubuntu-2004:202010-01
-    steps:
-      - checkout
-      - run:
-          name: test deploy
-          command: |
-            echo "test deploy success"
-            echo $AWS_ACCESS_KEY_ID
-      - aws-ecr/build-and-push-image:
-          account-url: AWS_ECR_ACCOUNT_URL
-          region: AWS_REGION
-          repo: "repo-svc-rent"
-          tag: '${CIRCLE_SHA1}'
-      - aws-ecs/deploy-service-update:
-          cluster-name: "ecs-cluster-dev-stock"
-          container-image-name-updates: 'container=svc-rent-service,tag=${CIRCLE_SHA1}'
-          family: 'task-svc-rent'
-          requires:
-            - aws-ecr/build-and-push-image
 
 workflows:
   version: 2.1
   test-and-deploy:
     jobs:
       - test
-      - deploy:
-          context:
-            - AWS_CONFIG
+      - aws-ecr/build-and-push-image:
           requires:
             - test
+          context:
+            - AWS_CONFIG
           filters:
             branches:
               only:
                 - test-aws-deploy
-#                - master
+          account-url: AWS_ECR_ACCOUNT_URL
+          region: AWS_REGION
+          repo: 'repo-svc-rent'
+          tag: '${CIRCLE_SHA1}'
+      - aws-ecs/deploy-service-update:
+          requires:
+            - aws-ecr/build-and-push-image
+          context:
+            - AWS_CONFIG
+          filters:
+            branches:
+              only:
+                - test-aws-deploy
+          cluster-name: 'ecs-cluster-dev-stock'
+          container-image-name-updates: 'container=svc-rent-service,tag=${CIRCLE_SHA1}'
+          family: 'task-svc-rent'
