@@ -1,6 +1,7 @@
 version: 2.1
+
 jobs:
-  build:
+  test:
     machine:
       image: ubuntu-2004:202010-01
     steps:
@@ -32,3 +33,25 @@ jobs:
           path: test-results
       - store_artifacts:
           path: test-results
+  deploy:
+    machine:
+      image: ubuntu-2004:202010-01
+    steps:
+      - checkout
+      - run:
+          name: test deploy
+          command: |
+            echo "test deploy success"
+
+workflows:
+  version: 2.1
+  test-and-deploy:
+    jobs:
+      - test
+      - deploy:
+          requires:
+            - test
+          filters:
+            branches:
+              only:
+                - master
