@@ -13,6 +13,7 @@ jobs:
           name: export environment variables
           command: |
             echo "export DB_HOST=\"$(ip -f inet addr show docker0 | grep -Po 'inet \K[\d.]+'):3306\"" >> $BASH_ENV
+            source $BASH_ENV
             echo "export DB_CONNECTION_URL=\"root:admin@${DB_HOST}/mydb\"" >> $BASH_ENV
       - run:
           name: echo exported variables for test
