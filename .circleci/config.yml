@@ -67,4 +67,5 @@ workflows:
                 - test-aws-deploy
           cluster-name: 'ecs-cluster-dev-stock'
           container-image-name-updates: 'container=container-svc-rent,tag=${CIRCLE_SHA1}'
-          family: 'svc-rent'
+          family: 'task-svc-rent'
+          service-name: 'svc-rent'
