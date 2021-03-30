@@ -1,5 +1,9 @@
 version: 2.1
 
+orbs:
+  aws-ecr: circleci/aws-ecr@6.15
+  aws-ecs: circleci/aws-ecs@2.0.0
+
 jobs:
   test:
     machine:
@@ -33,28 +37,35 @@ jobs:
           path: test-results
       - store_artifacts:
           path: test-results
-  deploy:
-    machine:
-      image: ubuntu-2004:202010-01
-    steps:
-      - checkout
-      - run:
-          name: test deploy
-          command: |
-            echo "test deploy success"
-            echo $AWS_ACCESS_KEY_ID
 
 workflows:
   version: 2.1
   test-and-deploy:
     jobs:
       - test
-      - deploy:
-          context:
-            - AWS_CONFIG
+      - aws-ecr/build-and-push-image:
           requires:
             - test
+          context:
+            - AWS_CONFIG
           filters:
             branches:
               only:
                 - master
+          account-url: AWS_ECR_ACCOUNT_URL
+          region: AWS_DEFAULT_REGION
+          repo: 'repo-svc-rent'
+          tag: '${CIRCLE_SHA1}'
+      - aws-ecs/deploy-service-update:
+          requires:
+            - aws-ecr/build-and-push-image
+          context:
+            - AWS_CONFIG
+          filters:
+            branches:
+              only:
+                - master
+          cluster-name: 'ecs-cluster-dev-stock'
+          container-image-name-updates: 'container=container-svc-rent,tag=${CIRCLE_SHA1}'
+          family: 'task-svc-rent'
+          service-name: 'svc-rent'

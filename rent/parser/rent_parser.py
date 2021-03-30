@@ -123,15 +123,18 @@ class RentParser():
     def __get_items(self):
         items_per_page = self.driver.find_elements_by_xpath(self.elements['items'])
         for item in items_per_page:
-            id = item.get_attribute('data-bind')
-            if self.__is_item_exist_in_db(id):
-                pass
-            else:
-                insert(self.session, House, {'id': id})
-                self.session.commit()
-                self.new_items.append(id)
-                print(f'new item found: {id}')
-            self.items.append(id)
+            try:
+                id = item.get_attribute('data-bind')
+                if self.__is_item_exist_in_db(id):
+                    pass
+                else:
+                    insert(self.session, House, {'id': id})
+                    self.session.commit()
+                    self.new_items.append(id)
+                    print(f'new item found: {id}')
+                self.items.append(id)
+            except Exception as e:
+                print(f'Cannot find {item} anymore: {e}')
         print(self.items)
 
     def parse(self):
