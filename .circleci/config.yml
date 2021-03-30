@@ -51,7 +51,7 @@ workflows:
           filters:
             branches:
               only:
-                - test-aws-deploy
+                - master
           account-url: AWS_ECR_ACCOUNT_URL
           region: AWS_DEFAULT_REGION
           repo: 'repo-svc-rent'
@@ -64,7 +64,7 @@ workflows:
           filters:
             branches:
               only:
-                - test-aws-deploy
+                - master
           cluster-name: 'ecs-cluster-dev-stock'
           container-image-name-updates: 'container=container-svc-rent,tag=${CIRCLE_SHA1}'
           family: 'task-svc-rent'
