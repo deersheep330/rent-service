@@ -79,42 +79,42 @@ class RentParser(VirtualParser):
         self.driver.get(self.url)
 
         # close modal
-        self.__wait_for('area_close')
-        self.__click('area_close')
-        #self.__wait_for('credit_close')
-        #self.__click('credit_close')
+        self._wait_for('area_close')
+        self._click('area_close')
+        #self._wait_for('credit_close')
+        #self._click('credit_close')
 
         # select section
-        self.__click_and_wait('section', 'zhonghe')
-        self.__click_and_wait('zhonghe', 'zhonghe_checked')
-        self.__click_and_wait('yonghe', 'yonghe_checked')
+        self._click_and_wait('section', 'zhonghe')
+        self._click_and_wait('zhonghe', 'zhonghe_checked')
+        self._click_and_wait('yonghe', 'yonghe_checked')
 
         # select type
         if self.rent_type == 'suite':
-            self.__click_and_wait('suite', 'suite_checked')
+            self._click_and_wait('suite', 'suite_checked')
         elif self.rent_type == 'flat':
-            self.__click_and_wait('flat', 'flat_checked')
+            self._click_and_wait('flat', 'flat_checked')
         else:
             raise Exception(f'Unsupported Rent Type: {self.rent_type}')
 
         # input price
-        self.__send_keys('price_min', self.price_min)
-        self.__send_keys('price_max', self.price_max)
-        self.__wait_for('price_submit')
-        self.__click_and_wait('price_submit', 'loading_now')
-        self.__wait_for('loading_completed')
+        self._send_keys('price_min', self.price_min)
+        self._send_keys('price_max', self.price_max)
+        self._wait_for('price_submit')
+        self._click_and_wait('price_submit', 'loading_now')
+        self._wait_for('loading_completed')
 
         # input plain
-        self.__send_keys('plain_min', self.plain_min)
-        self.__send_keys('plain_max', self.plain_max)
-        self.__wait_for('plain_submit')
-        self.__click_and_wait('plain_submit', 'loading_now')
-        self.__wait_for('loading_completed')
+        self._send_keys('plain_min', self.plain_min)
+        self._send_keys('plain_max', self.plain_max)
+        self._wait_for('plain_submit')
+        self._click_and_wait('plain_submit', 'loading_now')
+        self._wait_for('loading_completed')
 
-        self.__get_items()
-        while self.__is_exist('next_page'):
-            self.__click_and_wait('next_page', 'loading_now')
-            self.__wait_for('loading_completed')
-            self.__get_items()
+        self._get_items()
+        while self._is_exist('next_page'):
+            self._click_and_wait('next_page', 'loading_now')
+            self._wait_for('loading_completed')
+            self._get_items()
 
         self.driver.quit()

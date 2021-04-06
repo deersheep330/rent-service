@@ -42,7 +42,7 @@ class VirtualParser():
         count = delete_older_than(self.session, House, House.date, datetime.now().date() - timedelta(days=60))
         print(f'==> delete {count} old records ...')
 
-    def __is_item_exist_in_db(self, item):
+    def _is_item_exist_in_db(self, item):
         return self.session.query(exists().where(House.id == item)).scalar()
 
     def get_new_items_url(self):
@@ -54,14 +54,14 @@ class VirtualParser():
             new_items_url.append(self.item_url_template_prefix + new_item + self.item_url_template_suffix)
         return new_items_url
 
-    def __is_exist(self, target):
+    def _is_exist(self, target):
         try:
             self.driver.find_element_by_xpath(self.elements[target])
         except NoSuchElementException:
             return False
         return True
 
-    def __wait_for(self, target):
+    def _wait_for(self, target):
         try:
             WebDriverWait(self.driver, self.wait_timeout).until(
                 expected_conditions.presence_of_element_located((By.XPATH, self.elements[target]))
@@ -71,10 +71,10 @@ class VirtualParser():
             print(e)
             return False
 
-    def __click(self, target):
+    def _click(self, target):
         self.driver.find_element_by_xpath(self.elements[target]).click()
 
-    def __click_and_wait(self, target, expected):
+    def _click_and_wait(self, target, expected):
         success = False
         retry = 0
         max_retry = 10
@@ -90,11 +90,11 @@ class VirtualParser():
                 print(e)
             retry += 1
 
-    def __send_keys(self, target, keys):
+    def _send_keys(self, target, keys):
         _target = self.driver.find_element_by_xpath(self.elements[target])
         _target.send_keys(keys)
 
-    def __get_items(self):
+    def _get_items(self):
         items_per_page = self.driver.find_elements_by_xpath(self.elements['items'])
         for item in items_per_page:
             try:
