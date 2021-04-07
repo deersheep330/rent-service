@@ -20,14 +20,15 @@ class RentParser(VirtualParser):
 
         super().__init__()
 
-        # region = 1 : taipei city
-        # region = 3 : new taipei city
-        # self.url = 'https://rent.591.com.tw/?kind=0&region=1'
-        self.url = 'https://rent.591.com.tw/?kind=0&region=3'
+        self.url = 'https://rent.591.com.tw/?kind=0&region=1'
         self.item_url_template_prefix = 'https://rent.591.com.tw/rent-detail-'
         self.item_url_template_suffix = '.html'
 
         self.elements = {
+            'taipei': "//*[contains(@google-data-stat, '台北市')]",
+            'taipei_checked': "//*[contains(@google-data-stat, '台北市') and contains(@class, 'active')]",
+            'new_taipei': "//*[contains(@google-data-stat, '新北市')]",
+            'new_taipei_checked': "//*[contains(@google-data-stat, '新北市') and contains(@class, 'active')]",
             'area_close': "//*[contains(@class, 'area-box-close')]",
             'credit_close': "//*[contains(@class, 'accreditPop') and not(contains(@style, 'none'))]//*[contains(@class, 'close')]",
 
@@ -78,9 +79,12 @@ class RentParser(VirtualParser):
 
         self.driver.get(self.url)
 
-        # close modal
+        # select area
         self._wait_for('area_close')
-        self._click('area_close')
+        #self._click('area_close')
+        self._click('new_taipei')
+
+        # close modal
         #self._wait_for('credit_close')
         #self._click('credit_close')
 

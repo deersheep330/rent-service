@@ -99,7 +99,7 @@ class VirtualParser():
         for item in items_per_page:
             try:
                 id = item.get_attribute('data-bind')
-                if self.__is_item_exist_in_db(id):
+                if self._is_item_exist_in_db(id):
                     pass
                 else:
                     insert(self.session, House, {'id': id})
