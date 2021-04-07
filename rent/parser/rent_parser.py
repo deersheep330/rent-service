@@ -10,29 +10,28 @@ from webdriver_manager.chrome import ChromeDriverManager
 
 from rent.db import create_engine_from_url, start_session, insert, delete_older_than
 from rent.models import House
+from rent.parser.virtual_parser import VirtualParser
 from rent.utilities import get_db_connection_url
 
 
-class RentParser():
+class RentParser(VirtualParser):
 
-    def __init__(self, rent_type='suite'):
+    def __init__(self, rent_type='flat', price_min='10000', price_max='20000', plain_min='10', plain_max='35'):
 
-        self.engine = create_engine_from_url(get_db_connection_url())
-        self.session = start_session(self.engine)
+        super().__init__()
 
-        self.wait_timeout = 10
-        self.click_retry_timeout = 3
-
-        options = webdriver.ChromeOptions()
-        prefs = {'profile.default_content_setting_values.notifications': 2}
-        options.add_experimental_option('prefs', prefs)
-        options.add_argument('--headless')
-        options.add_argument('--no-sandbox')
-        self.driver = webdriver.Chrome(executable_path=ChromeDriverManager().install(), options=options)
         self.url = 'https://rent.591.com.tw/?kind=0&region=1'
+        self.item_url_template_prefix = 'https://rent.591.com.tw/rent-detail-'
+        self.item_url_template_suffix = '.html'
+
         self.elements = {
+            'taipei': "//*[contains(@google-data-stat, '台北市')]",
+            'taipei_checked': "//*[contains(@google-data-stat, '台北市') and contains(@class, 'active')]",
+            'new_taipei': "//*[contains(@google-data-stat, '新北市')]",
+            'new_taipei_checked': "//*[contains(@google-data-stat, '新北市') and contains(@class, 'active')]",
             'area_close': "//*[contains(@class, 'area-box-close')]",
             'credit_close': "//*[contains(@class, 'accreditPop') and not(contains(@style, 'none'))]//*[contains(@class, 'close')]",
+
             'section': "//*[contains(@google-data-stat, '按鄉鎮選擇')]",
             'shilin': "//label//span[contains(text(), '士林區')]",
             'shilin_checked': "//*[contains(@class, 'checkTips')]//span[contains(text(), '士林區')]",
@@ -40,146 +39,86 @@ class RentParser():
             'beitou_checked': "//*[contains(@class, 'checkTips')]//span[contains(text(), '北投區')]",
             'zhongshan': "//label//span[contains(text(), '中山區')]",
             'zhongshan_checked': "//*[contains(@class, 'checkTips')]//span[contains(text(), '中山區')]",
+
+            'zhonghe': "//label//span[contains(text(), '中和區')]",
+            'zhonghe_checked': "//*[contains(@class, 'checkTips')]//span[contains(text(), '中和區')]",
+            'yonghe': "//label//span[contains(text(), '永和區')]",
+            'yonghe_checked': "//*[contains(@class, 'checkTips')]//span[contains(text(), '永和區')]",
+
             'suite': "//*[contains(@class, 'search-rentType-span') and contains(@google-data-stat, '獨立套房')]",
             'suite_checked': "//*[contains(@class, 'search-rentType-span') and contains(@class, 'select') and contains(@google-data-stat, '獨立套房')]",
             'flat': "//*[contains(@class, 'search-rentType-span') and contains(@google-data-stat, '整層住家')]",
             'flat_checked': "//*[contains(@class, 'search-rentType-span') and contains(@class, 'select') and contains(@google-data-stat, '整層住家')]",
+
             'price_min': "//input[@id='rentPrice-min']",
             'price_max': "//input[@id='rentPrice-max']",
             'price_submit': "//*[contains(@class, 'rentPrice-btn') and not(contains(@style, 'none'))]",
+
             'plain_min': "//input[@id='plain-min']",
             'plain_max': "//input[@id='plain-max']",
             'plain_submit': "//*[contains(@class, 'plain-btn') and not(contains(@style, 'none'))]",
+
             'items': "//ul[@data-bind]",
             'next_page': "//*[contains(@class, 'pageNext') and not(contains(@class, 'last'))]",
+
             'loading_now': "//*[@rel='loading' and not(contains(@style, 'none'))]",
             'loading_completed': "//*[@rel='loading' and contains(@style, 'none')]"
         }
 
-        self.rent_type = rent_type
+        self.rent_type = rent_type  # could be suite or flat
 
-        self.price_min = '10000'
-        self.price_max = '20000'
-        self.plain_min = '10'
-        self.plain_max = '35'
-        self.items = []
-        self.new_items = []
-
-        count = delete_older_than(self.session, House, House.date, datetime.now().date() - timedelta(days=60))
-        print(f'delete {count} old records ...')
-
-    def __is_item_exist_in_db(self, item):
-        return self.session.query(exists().where(House.id == item)).scalar()
-
-    def get_new_items_url(self):
-        if len(self.items) == len(self.new_items):
-            print('first time ...')
-            return []
-        new_items_url = []
-        for new_item in self.new_items:
-            new_items_url.append(f'https://rent.591.com.tw/rent-detail-{new_item}.html')
-        return new_items_url
-
-    def __is_exist(self, target):
-        try:
-            self.driver.find_element_by_xpath(self.elements[target])
-        except NoSuchElementException:
-            return False
-        return True
-
-    def __wait_for(self, target):
-        try:
-            WebDriverWait(self.driver, self.wait_timeout).until(
-                expected_conditions.presence_of_element_located((By.XPATH, self.elements[target]))
-            )
-            return True
-        except Exception as e:
-            print(e)
-            return False
-
-    def __click(self, target):
-        self.driver.find_element_by_xpath(self.elements[target]).click()
-
-    def __click_and_wait(self, target, expected):
-        success = False
-        retry = 0
-        max_retry = 10
-        while success is not True and retry < max_retry:
-            try:
-                _target = self.driver.find_element_by_xpath(self.elements[target])
-                _target.click()
-                WebDriverWait(self.driver, self.click_retry_timeout).until(
-                    expected_conditions.presence_of_element_located((By.XPATH, self.elements[expected]))
-                )
-                success = True
-            except Exception as e:
-                print(e)
-            retry += 1
-
-    def __send_keys(self, target, keys):
-        _target = self.driver.find_element_by_xpath(self.elements[target])
-        _target.send_keys(keys)
-
-    def __get_items(self):
-        items_per_page = self.driver.find_elements_by_xpath(self.elements['items'])
-        for item in items_per_page:
-            try:
-                id = item.get_attribute('data-bind')
-                if self.__is_item_exist_in_db(id):
-                    pass
-                else:
-                    insert(self.session, House, {'id': id})
-                    self.session.commit()
-                    self.new_items.append(id)
-                    print(f'new item found: {id}')
-                self.items.append(id)
-            except Exception as e:
-                print(f'Cannot find {item} anymore: {e}')
-        print(self.items)
+        # price and plain should be type of string
+        self.price_min = price_min
+        self.price_max = price_max
+        self.plain_min = plain_min
+        self.plain_max = plain_max
 
     def parse(self):
-        print(f'==> parse page: {self.url}')
+
+        super().parse()
 
         self.driver.get(self.url)
 
+        # select area
+        self._wait_for('area_close')
+        #self._click('area_close')
+        self._click('new_taipei')
+
         # close modal
-        self.__wait_for('area_close')
-        self.__click('area_close')
-        #self.__wait_for('credit_close')
-        #self.__click('credit_close')
+        #self._wait_for('credit_close')
+        #self._click('credit_close')
 
         # select section
-        self.__click_and_wait('section', 'shilin')
-        self.__click_and_wait('shilin', 'shilin_checked')
-        self.__click_and_wait('beitou', 'beitou_checked')
-        self.__click_and_wait('zhongshan', 'zhongshan_checked')
+        self._click_and_wait('section', 'zhonghe')
+        self._click_and_wait('zhonghe', 'zhonghe_checked')
+        self._click_and_wait('yonghe', 'yonghe_checked')
 
         # select type
         if self.rent_type == 'suite':
-            self.__click_and_wait('suite', 'suite_checked')
+            self._click_and_wait('suite', 'suite_checked')
         elif self.rent_type == 'flat':
-            self.__click_and_wait('flat', 'flat_checked')
+            self._click_and_wait('flat', 'flat_checked')
         else:
             raise Exception(f'Unsupported Rent Type: {self.rent_type}')
 
         # input price
-        self.__send_keys('price_min', self.price_min)
-        self.__send_keys('price_max', self.price_max)
-        self.__wait_for('price_submit')
-        self.__click_and_wait('price_submit', 'loading_now')
-        self.__wait_for('loading_completed')
+        self._send_keys('price_min', self.price_min)
+        self._send_keys('price_max', self.price_max)
+        self._wait_for('price_submit')
+        self._click_and_wait('price_submit', 'loading_now')
+        self._wait_for('loading_completed')
 
         # input plain
-        self.__send_keys('plain_min', self.plain_min)
-        self.__send_keys('plain_max', self.plain_max)
-        self.__wait_for('plain_submit')
-        self.__click_and_wait('plain_submit', 'loading_now')
-        self.__wait_for('loading_completed')
+        self._send_keys('plain_min', self.plain_min)
+        self._send_keys('plain_max', self.plain_max)
+        self._wait_for('plain_submit')
+        self._click_and_wait('plain_submit', 'loading_now')
+        self._wait_for('loading_completed')
 
-        self.__get_items()
-        while self.__is_exist('next_page'):
-            self.__click_and_wait('next_page', 'loading_now')
-            self.__wait_for('loading_completed')
-            self.__get_items()
+        self._get_items()
+        while self._is_exist('next_page'):
+            self._click_and_wait('next_page', 'loading_now')
+            self._wait_for('loading_completed')
+            self._get_items()
 
         self.driver.quit()
