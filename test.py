@@ -29,7 +29,7 @@ def test_delete_old_records():
 
 
 def test_parsing_website():
-    flat_parser = RentParser(rent_type='flat')
+    flat_parser = RentParser()
     flat_parser.parse()
     new_items = flat_parser.new_items
     count = delete_older_than(session, House, House.date, datetime.now().date())
