@@ -1,3 +1,4 @@
+import traceback
 from datetime import datetime, timedelta
 
 from selenium import webdriver
@@ -28,6 +29,7 @@ class VirtualParser():
         options.add_experimental_option('prefs', prefs)
         options.add_argument('--headless')
         options.add_argument('--no-sandbox')
+        options.add_argument('window-size=1920,1080')
         self.driver = webdriver.Chrome(executable_path=ChromeDriverManager().install(), options=options)
 
         self.url = ''
@@ -88,6 +90,8 @@ class VirtualParser():
                 success = True
             except Exception as e:
                 print(e)
+                traceback.print_exception(type(e), e, e.__traceback__)
+                self.driver.save_screenshot('test.png')
             retry += 1
 
     def _send_keys(self, target, keys):
