@@ -16,7 +16,9 @@ from rent.utilities import get_db_connection_url
 
 class VirtualParser():
 
-    def __init__(self):
+    def __init__(self, is_first_time=False):
+
+        self.is_first_time = is_first_time
 
         self.engine = create_engine_from_url(get_db_connection_url())
         self.session = start_session(self.engine)
@@ -48,7 +50,7 @@ class VirtualParser():
         return self.session.query(exists().where(House.id == item)).scalar()
 
     def get_new_items_url(self):
-        if len(self.items) == len(self.new_items):
+        if self.is_first_time or len(self.items) == len(self.new_items):
             print('==> first time parsing ...')
             return []
         new_items_url = []

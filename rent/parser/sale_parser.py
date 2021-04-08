@@ -18,9 +18,12 @@ from rent.utilities import get_db_connection_url
 
 class SaleParser(VirtualParser):
 
-    def __init__(self, price_min='200', price_max='555'):
+    def __init__(self,
+                 is_first_time=False,
+                 price_min='200',
+                 price_max='555'):
 
-        super().__init__()
+        super().__init__(is_first_time=is_first_time)
 
         self.url = 'https://sale.591.com.tw/'
         self.item_url_template_prefix = 'https://sale.591.com.tw/home/house/detail/2/'
