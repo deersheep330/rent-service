@@ -3,9 +3,15 @@ from rent.parser.virtual_parser import VirtualParser
 
 class RentParser(VirtualParser):
 
-    def __init__(self, rent_type='flat', price_min='10000', price_max='20000', plain_min='15', plain_max='80'):
+    def __init__(self,
+                 is_first_time = False,
+                 rent_type='flat',
+                 price_min='10000',
+                 price_max='20000',
+                 plain_min='15',
+                 plain_max='80'):
 
-        super().__init__()
+        super().__init__(is_first_time=is_first_time)
 
         self.url = 'https://rent.591.com.tw/?kind=0&region=1'
         self.item_url_template_prefix = 'https://rent.591.com.tw/rent-detail-'
