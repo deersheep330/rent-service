@@ -1,24 +1,17 @@
-from datetime import datetime, timedelta
-
-from selenium import webdriver
-from selenium.common.exceptions import NoSuchElementException
-from selenium.webdriver.common.by import By
-from selenium.webdriver.support import expected_conditions
-from selenium.webdriver.support.wait import WebDriverWait
-from sqlalchemy import exists
-from webdriver_manager.chrome import ChromeDriverManager
-
-from rent.db import create_engine_from_url, start_session, insert, delete_older_than
-from rent.models import House
 from rent.parser.virtual_parser import VirtualParser
-from rent.utilities import get_db_connection_url
 
 
 class RentParser(VirtualParser):
 
-    def __init__(self, rent_type='flat', price_min='10000', price_max='20000', plain_min='10', plain_max='35'):
+    def __init__(self,
+                 is_first_time = False,
+                 rent_type='flat',
+                 price_min='10000',
+                 price_max='20000',
+                 plain_min='15',
+                 plain_max='80'):
 
-        super().__init__()
+        super().__init__(is_first_time=is_first_time)
 
         self.url = 'https://rent.591.com.tw/?kind=0&region=1'
         self.item_url_template_prefix = 'https://rent.591.com.tw/rent-detail-'
