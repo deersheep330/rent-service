@@ -16,3 +16,5 @@ def get_db_connection_url():
 
 def get_line_token():
     return read_env('LINE_TOKEN')
+
+
