@@ -21,5 +21,8 @@ if __name__ == '__main__':
     print(new_items)
 
     # send notification
-    for new_item in new_items:
-        send_message(new_item)
+    content = ''
+    for index, new_item in enumerate(new_items, start=1):
+        content += f'\n【{index}】 {new_item}\n'
+
+    send_message(content)
