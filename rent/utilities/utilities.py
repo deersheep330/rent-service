@@ -18,3 +18,5 @@ def get_line_token():
     return read_env('LINE_TOKEN')
 
 
+def get_line_token_of_yu():
+    return read_env('YU_LINE_TOKEN')

@@ -1,5 +1,5 @@
 from rent.db.operations import create_engine_from_url, create_all_tables_from_orm
-from rent.line_notify import send_message
+from rent.line_notify import send_message, send_message_to_yu
 from rent.utilities import get_db_connection_url
 from rent.parser import RentParser
 import sys
@@ -24,5 +24,6 @@ if __name__ == '__main__':
     content = ''
     for index, new_item in enumerate(new_items, start=1):
         content += f'\n【{index}】 {new_item}\n'
-
-    send_message(content)
+    if content != '':
+        send_message(content)
+        send_message_to_yu(content)
