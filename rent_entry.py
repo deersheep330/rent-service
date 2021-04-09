@@ -24,6 +24,6 @@ if __name__ == '__main__':
     content = ''
     for index, new_item in enumerate(new_items, start=1):
         content += f'\n【{index}】 {new_item}\n'
-
-    send_message(content)
-    send_message_to_yu(content)
+    if content != '':
+        send_message(content)
+        send_message_to_yu(content)
