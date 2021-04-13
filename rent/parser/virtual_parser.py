@@ -2,7 +2,7 @@ import traceback
 from datetime import datetime, timedelta
 
 from selenium import webdriver
-from selenium.common.exceptions import NoSuchElementException
+from selenium.common.exceptions import NoSuchElementException, ElementClickInterceptedException
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support import expected_conditions
 from selenium.webdriver.support.wait import WebDriverWait
@@ -72,7 +72,7 @@ class VirtualParser():
             )
             return True
         except Exception as e:
-            print(e)
+            print(f'wait for {target} error: {e}')
             return False
 
     def _click(self, target):
@@ -90,10 +90,11 @@ class VirtualParser():
                     expected_conditions.presence_of_element_located((By.XPATH, self.elements[expected]))
                 )
                 success = True
+            except ElementClickInterceptedException as e:
+                raise e
             except Exception as e:
-                print(e)
-                traceback.print_exception(type(e), e, e.__traceback__)
-                self.driver.save_screenshot('test.png')
+                print(f'[retry {retry}] try to click {target} and wait for {expected} failed ... {repr(e)} {e}')
+                self.driver.save_screenshot('error_screenshot_click_and_wait_for.png')
             retry += 1
 
     def _send_keys(self, target, keys):
