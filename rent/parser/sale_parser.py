@@ -133,7 +133,6 @@ class SaleParser(VirtualParser):
                 completed = True
             except Exception as e:
                 print(e)
-                self.driver.save_screenshot('screenshot.png')
                 if retry == max_retry:
                     raise e
                 else:

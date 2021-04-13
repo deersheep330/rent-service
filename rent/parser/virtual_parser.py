@@ -94,7 +94,6 @@ class VirtualParser():
                 raise e
             except Exception as e:
                 print(f'[retry {retry}] try to click {target} and wait for {expected} failed ... {repr(e)} {e}')
-                self.driver.save_screenshot('error_screenshot_click_and_wait_for.png')
             retry += 1
 
     def _send_keys(self, target, keys):
