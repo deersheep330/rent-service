@@ -72,7 +72,7 @@ class VirtualParser():
             )
             return True
         except Exception as e:
-            print(e)
+            print(f'wait for {target} error: {e}')
             return False
 
     def _click(self, target):
@@ -91,9 +91,9 @@ class VirtualParser():
                 )
                 success = True
             except Exception as e:
-                print(e)
-                traceback.print_exception(type(e), e, e.__traceback__)
-                self.driver.save_screenshot('test.png')
+                print(f'try to click {target} and wait for {expected} failed ... {e}')
+                print(f'retry: {retry}')
+                self.driver.save_screenshot('error_screenshot_click_and_wait_for.png')
             retry += 1
 
     def _send_keys(self, target, keys):
