@@ -1,19 +1,6 @@
-import time
 import traceback
-from datetime import datetime, timedelta
 
-from selenium import webdriver
-from selenium.common.exceptions import NoSuchElementException
-from selenium.webdriver.common.by import By
-from selenium.webdriver.support import expected_conditions
-from selenium.webdriver.support.wait import WebDriverWait
-from sqlalchemy import exists
-from webdriver_manager.chrome import ChromeDriverManager
-
-from rent.db import create_engine_from_url, start_session, insert, delete_older_than
-from rent.models import House
 from rent.parser.virtual_parser import VirtualParser
-from rent.utilities import get_db_connection_url
 
 
 class SaleParser(VirtualParser):
@@ -21,7 +8,9 @@ class SaleParser(VirtualParser):
     def __init__(self,
                  is_first_time=False,
                  price_min='200',
-                 price_max='555'):
+                 price_max='555',
+                 age_min='1',
+                 age_max='30'):
 
         super().__init__(is_first_time=is_first_time)
 
@@ -60,75 +49,96 @@ class SaleParser(VirtualParser):
             'rooms': "//*[contains(@class, 'pattern')]//*[contains(@data-gtm-stat, '3房')]",
             'rooms_checked': "//*[contains(@class, 'pattern')]//*[contains(@data-gtm-stat, '3房') and contains(@class, 'select')]",
 
-            'items': "//*[@data-bind and contains(@class, 'houseList-item')]",
+            'age': "//*[contains(@class, 'houseage')]//*[contains(text(), '屋齡')]",
+            'age_min': "//*[contains(@class, 'filter-more-list') and not(contains(@style, 'none'))]//input[contains(@class, 'min')]",
+            'age_max': "//*[contains(@class, 'filter-more-list') and not(contains(@style, 'none'))]//input[contains(@class, 'max')]",
+            'age_submit': "//*[contains(@class, 'filter-more-list') and not(contains(@style, 'none'))]//*[contains(@class, 'submit')]",
+
+            'items': "//*[@data-bind and contains(@class, 'houseList-item') and not(contains(@class, 'houseList-item-collect'))]",
             'next_page': "//*[contains(@class, 'pageNext') and not(contains(@class, 'last'))]",
 
             'loading_now': "//*[@rel='loading' and not(contains(@style, 'none'))]",
             'loading_completed': "//*[@rel='loading' and contains(@style, 'none')]"
         }
 
-        # price should be type of string
+        # price and age should be type of string
         self.price_min = price_min
         self.price_max = price_max
+        self.age_min = age_min
+        self.age_max = age_max
 
     def parse(self):
 
         super().parse()
 
-        try:
+        completed = False
+        retry = 0
+        max_retry = 3
+        while not completed and retry < max_retry:
+            try:
 
-            self.driver.get(self.url)
-            self._wait_for('loading_completed')
-
-            # close gdpr
-            #if self._is_exist('credit_close'):
-            #    self._click('credit_close')
-
-            # close popup
-            self._wait_for('close_popup')
-            if self._is_exist('close_popup'):
-                self._click('close_popup')
-
-            # select area
-            self._click_and_wait('area', 'keelung')
-            self._click_and_wait('keelung', 'keelung_checked')
-            #self._wait_for('loading_completed')
-
-            #time.sleep(10)
-
-            # select section
-            #self._click_and_wait('section', 'xinyi')
-            self._click_and_wait('xinyi', 'xinyi_checked')
-            self._click_and_wait('renai', 'renai_checked')
-            self._click_and_wait('zhongzheng', 'zhongzheng_checked')
-            self._click('unfocus')
-            self._wait_for('loading_completed')
-
-            # select type
-            self._click_and_wait('flat', 'flat_checked')
-            self._wait_for('loading_completed')
-
-            # input price
-            #self._click_and_wait('price_show_more', 'price_min')
-            self._send_keys('price_min', self.price_min)
-            self._send_keys('price_max', self.price_max)
-            self._wait_for('price_submit')
-            self._click_and_wait('price_submit', 'loading_now')
-            self._wait_for('loading_completed')
-
-            # select rooms
-            self._click_and_wait('rooms', 'rooms_checked')
-            self._wait_for('loading_completed')
-
-            self._get_items()
-            while self._is_exist('next_page'):
-                self._click_and_wait('next_page', 'loading_now')
+                self.driver.get(self.url)
                 self._wait_for('loading_completed')
+
+                # close gdpr
+                #if self._is_exist('credit_close'):
+                #    self._click('credit_close')
+
+                # close popup
+                self._wait_for('close_popup')
+                if self._is_exist('close_popup'):
+                    self._click('close_popup')
+
+                # select area
+                self._click_and_wait('area', 'keelung')
+                self._click_and_wait('keelung', 'keelung_checked')
+                #self._wait_for('loading_completed')
+
+                # select section
+                #self._click_and_wait('section', 'xinyi')
+                self._click_and_wait('xinyi', 'xinyi_checked')
+                self._click_and_wait('renai', 'renai_checked')
+                #self._click_and_wait('zhongzheng', 'zhongzheng_checked')
+                self._click('unfocus')
+                self._wait_for('loading_completed')
+
+                # select type
+                self._click_and_wait('flat', 'flat_checked')
+                self._wait_for('loading_completed')
+
+                # input price
+                #self._click_and_wait('price_show_more', 'price_min')
+                self._send_keys('price_min', self.price_min)
+                self._send_keys('price_max', self.price_max)
+                self._wait_for('price_submit')
+                self._click_and_wait('price_submit', 'loading_now')
+                self._wait_for('loading_completed')
+
+                # select rooms
+                self._click_and_wait('rooms', 'rooms_checked')
+                self._wait_for('loading_completed')
+
+                # select age
+                self._click_and_wait('age', 'age_min')
+                self._send_keys('age_min', self.age_min)
+                self._send_keys('age_max', self.age_max)
+                self._click_and_wait('age_submit', 'loading_now')
+                self._wait_for('loading_completed')
+
                 self._get_items()
+                while self._is_exist('next_page'):
+                    self._click_and_wait('next_page', 'loading_now')
+                    self._wait_for('loading_completed')
+                    self._get_items()
+                completed = True
+            except Exception as e:
+                print(e)
+                self.driver.save_screenshot('screenshot.png')
+                if retry == max_retry:
+                    raise e
+                else:
+                    print(f'retry: {retry}')
+            finally:
+                retry += 1
 
-            self.driver.quit()
-
-        except Exception as e:
-            print(e)
-            traceback.print_exception(type(e), e, e.__traceback__)
-            self.driver.save_screenshot('screenshot.png')
+        self.driver.quit()

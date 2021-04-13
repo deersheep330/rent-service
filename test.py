@@ -2,7 +2,7 @@ from datetime import datetime, timedelta
 
 from rent.db import create_engine_from_url, create_all_tables_from_orm, delete_older_than, start_session, insert, count
 from rent.models import House
-from rent.parser import RentParser
+from rent.parser import RentParser, SaleParser
 from rent.utilities import get_db_connection_url
 
 engine = create_engine_from_url(get_db_connection_url())
@@ -28,11 +28,25 @@ def test_delete_old_records():
     assert count == 2
 
 
-def test_parsing_website():
-    flat_parser = RentParser()
-    flat_parser.parse()
-    new_items = flat_parser.new_items
+def test_rent_parsing():
+
     count = delete_older_than(session, House, House.date, datetime.now().date())
     print(f'delete {count} old records')
     session.commit()
+
+    flat_parser = RentParser()
+    flat_parser.parse()
+    new_items = flat_parser.new_items
+    assert len(new_items) > 0
+
+
+def test_sale_parsing():
+
+    count = delete_older_than(session, House, House.date, datetime.now().date())
+    print(f'delete {count} old records')
+    session.commit()
+
+    parser = SaleParser()
+    parser.parse()
+    new_items = parser.new_items
     assert len(new_items) > 0
