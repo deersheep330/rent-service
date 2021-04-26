@@ -68,50 +68,57 @@ class RentParser(VirtualParser):
 
     def parse(self):
 
+        print(f'*** rent parsing start ***')
+
         super().parse()
 
-        self.driver.get(self.url)
+        try:
+            self.driver.get(self.url)
 
-        # select area
-        self._wait_for('area_close')
-        #self._click('area_close')
-        self._click('new_taipei')
+            # select area
+            self._wait_for('area_close')
+            #self._click('area_close')
+            self._click('new_taipei')
 
-        # close modal
-        #self._wait_for('credit_close')
-        #self._click('credit_close')
+            # close modal
+            #self._wait_for('credit_close')
+            #self._click('credit_close')
 
-        # select section
-        self._click_and_wait('section', 'zhonghe')
-        self._click_and_wait('zhonghe', 'zhonghe_checked')
-        self._click_and_wait('yonghe', 'yonghe_checked')
+            # select section
+            self._click_and_wait('section', 'zhonghe')
+            self._click_and_wait('zhonghe', 'zhonghe_checked')
+            self._click_and_wait('yonghe', 'yonghe_checked')
 
-        # select type
-        if self.rent_type == 'suite':
-            self._click_and_wait('suite', 'suite_checked')
-        elif self.rent_type == 'flat':
-            self._click_and_wait('flat', 'flat_checked')
-        else:
-            raise Exception(f'Unsupported Rent Type: {self.rent_type}')
+            # select type
+            if self.rent_type == 'suite':
+                self._click_and_wait('suite', 'suite_checked')
+            elif self.rent_type == 'flat':
+                self._click_and_wait('flat', 'flat_checked')
+            else:
+                raise Exception(f'Unsupported Rent Type: {self.rent_type}')
 
-        # input price
-        self._send_keys('price_min', self.price_min)
-        self._send_keys('price_max', self.price_max)
-        self._wait_for('price_submit')
-        self._click_and_wait('price_submit', 'loading_now')
-        self._wait_for('loading_completed')
-
-        # input plain
-        self._send_keys('plain_min', self.plain_min)
-        self._send_keys('plain_max', self.plain_max)
-        self._wait_for('plain_submit')
-        self._click_and_wait('plain_submit', 'loading_now')
-        self._wait_for('loading_completed')
-
-        self._get_items()
-        while self._is_exist('next_page'):
-            self._click_and_wait('next_page', 'loading_now')
+            # input price
+            self._send_keys('price_min', self.price_min)
+            self._send_keys('price_max', self.price_max)
+            self._wait_for('price_submit')
+            self._click_and_wait('price_submit', 'loading_now')
             self._wait_for('loading_completed')
-            self._get_items()
 
-        self.driver.quit()
+            # input plain
+            self._send_keys('plain_min', self.plain_min)
+            self._send_keys('plain_max', self.plain_max)
+            self._wait_for('plain_submit')
+            self._click_and_wait('plain_submit', 'loading_now')
+            self._wait_for('loading_completed')
+
+            self._get_items()
+            while self._is_exist('next_page'):
+                self._click_and_wait('next_page', 'loading_now')
+                self._wait_for('loading_completed')
+                self._get_items()
+
+        except Exception as e:
+            print(f'*** rent parsing exception {e} ***')
+        finally:
+            self.driver.quit()
+            print(f'*** rent parsing return ***')
