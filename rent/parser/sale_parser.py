@@ -69,75 +69,84 @@ class SaleParser(VirtualParser):
 
     def parse(self):
 
+        print(f'*** sale parsing start ***')
+
         super().parse()
 
-        completed = False
-        retry = 0
-        max_retry = 3
-        while not completed and retry < max_retry:
-            try:
+        try:
+            completed = False
+            retry = 0
+            max_retry = 3
+            while not completed and retry < max_retry:
+                try:
 
-                self.driver.get(self.url)
-                self._wait_for('loading_completed')
-
-                # close gdpr
-                #if self._is_exist('credit_close'):
-                #    self._click('credit_close')
-
-                # close popup
-                self._wait_for('close_popup')
-                if self._is_exist('close_popup'):
-                    self._click('close_popup')
-
-                # select area
-                self._click_and_wait('area', 'keelung')
-                self._click_and_wait('keelung', 'keelung_checked')
-                #self._wait_for('loading_completed')
-
-                # select section
-                #self._click_and_wait('section', 'xinyi')
-                self._click_and_wait('xinyi', 'xinyi_checked')
-                self._click_and_wait('renai', 'renai_checked')
-                #self._click_and_wait('zhongzheng', 'zhongzheng_checked')
-                self._click('unfocus')
-                self._wait_for('loading_completed')
-
-                # select type
-                self._click_and_wait('flat', 'flat_checked')
-                self._wait_for('loading_completed')
-
-                # input price
-                #self._click_and_wait('price_show_more', 'price_min')
-                self._send_keys('price_min', self.price_min)
-                self._send_keys('price_max', self.price_max)
-                self._wait_for('price_submit')
-                self._click_and_wait('price_submit', 'loading_now')
-                self._wait_for('loading_completed')
-
-                # select rooms
-                self._click_and_wait('rooms', 'rooms_checked')
-                self._wait_for('loading_completed')
-
-                # select age
-                self._click_and_wait('age', 'age_min')
-                self._send_keys('age_min', self.age_min)
-                self._send_keys('age_max', self.age_max)
-                self._click_and_wait('age_submit', 'loading_now')
-                self._wait_for('loading_completed')
-
-                self._get_items()
-                while self._is_exist('next_page'):
-                    self._click_and_wait('next_page', 'loading_now')
+                    self.driver.get(self.url)
                     self._wait_for('loading_completed')
-                    self._get_items()
-                completed = True
-            except Exception as e:
-                print(e)
-                if retry == max_retry:
-                    raise e
-                else:
-                    print(f'retry: {retry}')
-            finally:
-                retry += 1
 
-        self.driver.quit()
+                    # close gdpr
+                    #if self._is_exist('credit_close'):
+                    #    self._click('credit_close')
+
+                    # close popup
+                    self._wait_for('close_popup')
+                    if self._is_exist('close_popup'):
+                        self._click('close_popup')
+
+                    # select area
+                    self._click_and_wait('area', 'keelung')
+                    self._click_and_wait('keelung', 'keelung_checked')
+                    #self._wait_for('loading_completed')
+
+                    # select section
+                    #self._click_and_wait('section', 'xinyi')
+                    self._click_and_wait('xinyi', 'xinyi_checked')
+                    self._click_and_wait('renai', 'renai_checked')
+                    #self._click_and_wait('zhongzheng', 'zhongzheng_checked')
+                    self._click('unfocus')
+                    self._wait_for('loading_completed')
+
+                    # select type
+                    self._click_and_wait('flat', 'flat_checked')
+                    self._wait_for('loading_completed')
+
+                    # input price
+                    #self._click_and_wait('price_show_more', 'price_min')
+                    self._send_keys('price_min', self.price_min)
+                    self._send_keys('price_max', self.price_max)
+                    self._wait_for('price_submit')
+                    self._click_and_wait('price_submit', 'loading_now')
+                    self._wait_for('loading_completed')
+
+                    # select rooms
+                    self._click_and_wait('rooms', 'rooms_checked')
+                    self._wait_for('loading_completed')
+
+                    # select age
+                    self._click_and_wait('age', 'age_min')
+                    self._send_keys('age_min', self.age_min)
+                    self._send_keys('age_max', self.age_max)
+                    self._click_and_wait('age_submit', 'loading_now')
+                    self._wait_for('loading_completed')
+
+                    self._get_items()
+                    _retry = 0
+                    _max_retry = 10
+                    while _retry < _max_retry and self._is_exist('next_page'):
+                        self._click_and_wait('next_page', 'loading_now')
+                        self._wait_for('loading_completed')
+                        self._get_items()
+                        _retry += 1
+                    completed = True
+                except Exception as e:
+                    print(e)
+                    if retry == max_retry:
+                        raise e
+                    else:
+                        print(f'retry: {retry}')
+                finally:
+                    retry += 1
+        except Exception as _e:
+            print(f'*** sale parsing exception {_e} ***')
+        finally:
+            self.driver.quit()
+            print(f'*** sale parsing return ***')

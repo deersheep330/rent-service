@@ -18,7 +18,7 @@ if __name__ == '__main__':
     flat_parser = RentParser(is_first_time=is_first_time)
     flat_parser.parse()
     new_items = flat_parser.get_new_items_url()
-    print(new_items)
+    print(f'==> rent parsing get new items: {new_items}')
 
     # send notification
     content = ''
