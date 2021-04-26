@@ -19,7 +19,7 @@ if __name__ == '__main__':
     parser = SaleParser(is_first_time=is_first_time)
     parser.parse()
     new_items = parser.get_new_items_url()
-    print(new_items)
+    print(f'==> sale parsing get new items: {new_items}')
 
     # send notification
     content = ''
