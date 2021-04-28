@@ -46,8 +46,10 @@ class SaleParser(VirtualParser):
             'price_max': "//*[contains(@class, 'saleprice')]//input[contains(@class, 'max')]",
             'price_submit': "//*[contains(@class, 'saleprice')]//*[contains(@class, 'submit')]",
 
-            'rooms': "//*[contains(@class, 'pattern')]//*[contains(@data-gtm-stat, '3房')]",
-            'rooms_checked': "//*[contains(@class, 'pattern')]//*[contains(@data-gtm-stat, '3房') and contains(@class, 'select')]",
+            'rooms_3': "//*[contains(@class, 'pattern')]//*[contains(@data-gtm-stat, '3房')]",
+            'rooms_3_checked': "//*[contains(@class, 'pattern')]//*[contains(@data-gtm-stat, '3房') and contains(@class, 'select')]",
+            'rooms_4': "//*[contains(@class, 'pattern')]//*[contains(@data-gtm-stat, '4房')]",
+            'rooms_4_checked': "//*[contains(@class, 'pattern')]//*[contains(@data-gtm-stat, '4房') and contains(@class, 'select')]",
 
             'age': "//*[contains(@class, 'houseage')]//*[contains(text(), '屋齡')]",
             'age_min': "//*[contains(@class, 'filter-more-list') and not(contains(@style, 'none'))]//input[contains(@class, 'min')]",
@@ -118,7 +120,9 @@ class SaleParser(VirtualParser):
                     self._wait_for('loading_completed')
 
                     # select rooms
-                    self._click_and_wait('rooms', 'rooms_checked')
+                    self._click_and_wait('rooms_3', 'rooms_3_checked')
+                    self._wait_for('loading_completed')
+                    self._click_and_wait('rooms_4', 'rooms_4_checked')
                     self._wait_for('loading_completed')
 
                     # select age

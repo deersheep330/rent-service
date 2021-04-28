@@ -16,9 +16,15 @@ if __name__ == '__main__':
     create_all_tables_from_orm(engine)
 
     # parse website and find new items for flat
-    parser = SaleParser(is_first_time=is_first_time)
-    parser.parse()
-    new_items = parser.get_new_items_url()
+    retry = 0
+    max_retry = 3
+    total_items_count = 0
+    while total_items_count == 0 and retry < max_retry:
+        parser = SaleParser(is_first_time=is_first_time)
+        parser.parse()
+        total_items_count = parser.new_items
+        new_items = parser.get_new_items_url()
+        retry += 1
     print(f'==> sale parsing get new items: {new_items}')
 
     # send notification
