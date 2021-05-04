@@ -55,4 +55,4 @@ def test_sale_parsing():
         new_items = parser.new_items
         new_items_len = len(new_items)
         retry += 1
-    assert len(new_items_len) > 0
+    assert new_items_len > 0
