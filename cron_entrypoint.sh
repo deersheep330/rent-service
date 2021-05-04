@@ -1,3 +1,3 @@
 #!/bin/bash
 printenv > /etc/environment
-cron
+cron -f
