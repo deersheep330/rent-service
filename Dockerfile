@@ -22,7 +22,8 @@ COPY ./wait-for-it.sh .
 # COPY ./__variables.ini .
 
 # Run the command on container startup
-CMD /usr/local/bin/python /home/app/rent_entry.py init && sleep 5m && /usr/local/bin/python /home/app/sale_entry.py init && /bin/bash ./cron_entrypoint.sh
+# https://stackoverflow.com/questions/37458287/how-to-run-a-cron-job-inside-a-docker-container
+CMD /usr/local/bin/python /home/app/rent_entry.py init && sleep 5m && /usr/local/bin/python /home/app/sale_entry.py init && /bin/bash ./cron_entrypoint.sh > /proc/1/fd/1 2>/proc/1/fd/2
 # CMD ["cron", "-f"]
 
 #Quick note about a gotcha:
