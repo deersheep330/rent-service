@@ -37,7 +37,7 @@ def test_rent_parsing():
     flat_parser = RentParser()
     flat_parser.parse()
     new_items = flat_parser.new_items
-    assert len(new_items) > 0
+    assert len(new_items) >= 0
 
 
 def test_sale_parsing():
@@ -49,4 +49,4 @@ def test_sale_parsing():
     parser = SaleParser()
     parser.parse()
     new_items = parser.new_items
-    assert len(new_items) > 0
+    assert len(new_items) >= 0
