@@ -46,13 +46,7 @@ def test_sale_parsing():
     print(f'delete {count} old records')
     session.commit()
 
-    retry = 0
-    max_retry = 5
-    new_items_len = 0
-    while new_items_len == 0 and retry < max_retry:
-        parser = SaleParser()
-        parser.parse()
-        new_items = parser.new_items
-        new_items_len = len(new_items)
-        retry += 1
-    assert new_items_len > 0
+    parser = SaleParser()
+    parser.parse()
+    new_items = parser.new_items
+    assert len(new_items) >= 0
