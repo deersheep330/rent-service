@@ -103,7 +103,7 @@ class SaleParser(VirtualParser):
                     #self._click_and_wait('section', 'xinyi')
                     self._click_and_wait('xinyi', 'xinyi_checked')
                     self._click_and_wait('renai', 'renai_checked')
-                    #self._click_and_wait('zhongzheng', 'zhongzheng_checked')
+                    self._click_and_wait('zhongzheng', 'zhongzheng_checked')
                     self._click('unfocus')
                     self._wait_for('loading_completed')
 
