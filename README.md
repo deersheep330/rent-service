@@ -1,4 +1,4 @@
-# Rent Service  [![CircleCI](https://circleci.com/gh/deersheep330/svc-rent.svg?style=shield)](https://app.circleci.com/pipelines/github/deersheep330/svc-rent)
+# Rent Service  [![CircleCI](https://circleci.com/gh/deersheep330/rent-service.svg?style=shield)](https://app.circleci.com/pipelines/github/deersheep330/rent-service)
 
 #### local run
 ```
