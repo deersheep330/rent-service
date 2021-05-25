@@ -38,37 +38,18 @@ jobs:
           path: test-results
       - store_artifacts:
           path: test-results
-  deploy:
+  terraform-deploy:
+    executor: terraform/default
     steps:
       - checkout
       - terraform/init:
-          context:
-            - AWS_CONFIG
-            - TERRAFORM_CONFIG
+          path: terraform
       - terraform/validate:
-          context:
-            - AWS_CONFIG
-            - TERRAFORM_CONFIG
-          requires:
-            - terraform/init
+          path: terraform
       - terraform/plan:
-          persist-workspace: true
-          context:
-            - AWS_CONFIG
-            - TERRAFORM_CONFIG
-          requires:
-            - terraform/validate
+          path: terraform
       - terraform/apply:
-          attach-workspace: true
-          context:
-            - AWS_CONFIG
-            - TERRAFORM_CONFIG
-          filters:
-            branches:
-              only: master
-          requires:
-            - terraform/plan
-
+          path: terraform
 
 workflows:
   version: 2.1
@@ -88,11 +69,12 @@ workflows:
           region: AWS_DEFAULT_REGION
           repo: 'rent-service'
           tag: 'latest,${CIRCLE_SHA1}'
-      - deploy:
+      - terraform-deploy:
           requires:
             - aws-ecr/build-and-push-image
           context:
             - AWS_CONFIG
+            - TERRAFORM_CONFIG
           filters:
             branches:
               only:
