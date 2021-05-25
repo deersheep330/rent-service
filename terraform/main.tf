@@ -27,6 +27,7 @@ data "terraform_remote_state" "remote_state" {
 
 resource "aws_cloudwatch_log_group" "cloudwatch_log_group" {
   name = var.cloudwatch_group
+  retention_in_days = 7
 }
 
 data "template_file" "container_definition" {
