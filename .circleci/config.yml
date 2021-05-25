@@ -67,7 +67,7 @@ workflows:
                 - master
           account-url: AWS_ECR_ACCOUNT_URL
           region: AWS_DEFAULT_REGION
-          repo: 'rent-service'
+          repo: 'rent'
           tag: 'latest,${CIRCLE_SHA1}'
       - terraform-deploy:
           requires:
