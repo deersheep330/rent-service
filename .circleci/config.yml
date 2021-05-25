@@ -3,6 +3,7 @@ version: 2.1
 orbs:
   aws-ecr: circleci/aws-ecr@6.15
   aws-ecs: circleci/aws-ecs@2.0.0
+  terraform: circleci/terraform@2.1.0
 
 jobs:
   test:
@@ -37,6 +38,37 @@ jobs:
           path: test-results
       - store_artifacts:
           path: test-results
+  deploy:
+    steps:
+      - checkout
+      - terraform/init:
+          context:
+            - AWS_CONFIG
+            - TERRAFORM_CONFIG
+      - terraform/validate:
+          context:
+            - AWS_CONFIG
+            - TERRAFORM_CONFIG
+          requires:
+            - terraform/init
+      - terraform/plan:
+          persist-workspace: true
+          context:
+            - AWS_CONFIG
+            - TERRAFORM_CONFIG
+          requires:
+            - terraform/validate
+      - terraform/apply:
+          attach-workspace: true
+          context:
+            - AWS_CONFIG
+            - TERRAFORM_CONFIG
+          filters:
+            branches:
+              only: master
+          requires:
+            - terraform/plan
+
 
 workflows:
   version: 2.1
@@ -54,9 +86,9 @@ workflows:
                 - master
           account-url: AWS_ECR_ACCOUNT_URL
           region: AWS_DEFAULT_REGION
-          repo: 'repo-svc-rent'
+          repo: 'rent-service'
           tag: 'latest,${CIRCLE_SHA1}'
-      - aws-ecs/deploy-service-update:
+      - deploy:
           requires:
             - aws-ecr/build-and-push-image
           context:
@@ -65,7 +97,3 @@ workflows:
             branches:
               only:
                 - master
-          cluster-name: 'ecs-cluster-dev-stock'
-          container-image-name-updates: 'container=container-svc-rent,tag=${CIRCLE_SHA1}'
-          family: 'task-svc-rent'
-          service-name: 'svc-rent'
