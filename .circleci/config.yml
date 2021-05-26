@@ -42,6 +42,15 @@ jobs:
     executor: terraform/default
     steps:
       - checkout
+      - run:
+          name: export CIRCLE_SHA1 for image version
+          command: |
+            echo "export TF_VAR_IMAGE_VERSION=\"${CIRCLE_SHA1}\"" >> $BASH_ENV
+            source $BASH_ENV
+      - run:
+          name: echo exported variables for test
+          command: |
+            echo $TF_VAR_IMAGE_VERSION
       - terraform/init:
           path: terraform
       - terraform/validate:

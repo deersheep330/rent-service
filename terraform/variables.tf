@@ -9,6 +9,10 @@ variable "name_prefix" {
   default = "rent-service"
 }
 
+variable "IMAGE_VERSION" {
+  type = string
+}
+
 variable "LINE_TOKEN" {
   type = string
   default = "line_token"
