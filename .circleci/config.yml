@@ -40,6 +40,9 @@ jobs:
           path: test-results
   terraform-deploy:
     executor: terraform/default
+    shell: /bin/sh -leo pipefail
+    environment:
+      - BASH_ENV: /etc/profile
     steps:
       - checkout
       - run:
