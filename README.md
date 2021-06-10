@@ -29,6 +29,10 @@ docker run -it --name mysql -p 3306:3306 -e MYSQL_ROOT_PASSWORD=admin -e MYSQL_D
 ```
 docker run --name adminer --link mysql:mydb -p 7890:8080 -d adminer
 # can login to adminer console only after mysql initialized
+# server: mysql
+# account: root
+# password: admin
+# database: mydb
 ```
 
 (6) export db host and db connection url
