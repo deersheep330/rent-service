@@ -31,7 +31,7 @@ class VirtualParser():
         options.add_experimental_option('prefs', prefs)
         options.add_argument('--headless')
         options.add_argument('--no-sandbox')
-        options.add_argument('window-size=1920,1080')
+        options.add_argument('window-size=1920,1200')
         self.driver = webdriver.Chrome(executable_path=ChromeDriverManager().install(), options=options)
 
         self.url = ''
