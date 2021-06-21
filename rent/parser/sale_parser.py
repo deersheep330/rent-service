@@ -20,6 +20,8 @@ class SaleParser(VirtualParser):
 
         self.elements = {
 
+            'intercepted': "//div[contains(@class, 'union_responsive')]",
+
             'credit_close': "//*[contains(@class, 'accreditPop') and not(contains(@style, 'none'))]//*[contains(@class, 'close')]",
             'close_popup': "//*[contains(@class, 'tips-popbox-img')]",
 
@@ -84,6 +86,9 @@ class SaleParser(VirtualParser):
 
                     self.driver.get(self.url)
                     self._wait_for('loading_completed')
+
+                    if self._is_exist('intercepted'):
+                        self.driver.execute_script("document.getElementsByClassName('union_responsive')[0].remove()")
 
                     # close gdpr
                     #if self._is_exist('credit_close'):
