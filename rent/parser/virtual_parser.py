@@ -43,7 +43,7 @@ class VirtualParser():
         self.items = []
         self.new_items = []
 
-        count = delete_older_than(self.session, House, House.date, datetime.now().date() - timedelta(days=60))
+        count = delete_older_than(self.session, House, House.date, datetime.now().date() - timedelta(days=360))
         print(f'==> delete {count} old records ...')
 
     def _is_item_exist_in_db(self, item):
