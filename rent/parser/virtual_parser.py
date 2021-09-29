@@ -1,3 +1,4 @@
+import re
 import traceback
 from datetime import datetime, timedelta
 
@@ -100,11 +101,13 @@ class VirtualParser():
         _target = self.driver.find_element_by_xpath(self.elements[target])
         _target.send_keys(keys)
 
-    def _get_items(self):
+    def _get_items(self, attr='data-bind'):
         items_per_page = self.driver.find_elements_by_xpath(self.elements['items'])
         for item in items_per_page:
             try:
-                id = item.get_attribute('data-bind')
+                value = item.get_attribute(attr)
+                m = re.search(r'\d{7,}', value)
+                id = m.group(0)
                 if self._is_item_exist_in_db(id):
                     pass
                 else:
