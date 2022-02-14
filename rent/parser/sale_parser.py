@@ -14,7 +14,7 @@ class SaleParser(VirtualParser):
 
         super().__init__(is_first_time=is_first_time)
 
-        self.url = 'https://sale.591.com.tw/'
+        self.url = 'https://sale.591.com.tw/?shType=list&regionid=2&kind=9&houseage=$_33$&shape=3,4&price=333$_777$'
         self.item_url_template_prefix = 'https://sale.591.com.tw/home/house/detail/2/'
         self.item_url_template_suffix = '.html'
 
@@ -89,53 +89,6 @@ class SaleParser(VirtualParser):
 
                     if self._is_exist('intercepted'):
                         self.driver.execute_script("document.getElementsByClassName('union_responsive')[0].remove()")
-
-                    # close gdpr
-                    #if self._is_exist('credit_close'):
-                    #    self._click('credit_close')
-
-                    # close popup
-                    self._wait_for('close_popup')
-                    if self._is_exist('close_popup'):
-                        self._click('close_popup')
-
-                    # select area
-                    self._click_and_wait('area', 'keelung')
-                    self._click_and_wait('keelung', 'keelung_checked')
-                    #self._wait_for('loading_completed')
-
-                    # select section
-                    #self._click_and_wait('section', 'xinyi')
-                    self._click_and_wait('xinyi', 'xinyi_checked')
-                    self._click_and_wait('renai', 'renai_checked')
-                    self._click_and_wait('zhongzheng', 'zhongzheng_checked')
-                    self._click('unfocus')
-                    self._wait_for('loading_completed')
-
-                    # select type
-                    self._click_and_wait('flat', 'flat_checked')
-                    self._wait_for('loading_completed')
-
-                    # input price
-                    #self._click_and_wait('price_show_more', 'price_min')
-                    self._send_keys('price_min', self.price_min)
-                    self._send_keys('price_max', self.price_max)
-                    self._wait_for('price_submit')
-                    self._click_and_wait('price_submit', 'loading_now')
-                    self._wait_for('loading_completed')
-
-                    # select rooms
-                    self._click_and_wait('rooms_3', 'rooms_3_checked')
-                    self._wait_for('loading_completed')
-                    self._click_and_wait('rooms_4', 'rooms_4_checked')
-                    self._wait_for('loading_completed')
-
-                    # select age
-                    self._click_and_wait('age', 'age_min')
-                    self._send_keys('age_min', self.age_min)
-                    self._send_keys('age_max', self.age_max)
-                    self._click_and_wait('age_submit', 'loading_now')
-                    self._wait_for('loading_completed')
 
                     self._get_items()
                     _retry = 0
