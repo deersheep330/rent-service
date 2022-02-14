@@ -13,7 +13,7 @@ class RentParser(VirtualParser):
 
         super().__init__(is_first_time=is_first_time)
 
-        self.url = 'https://rent.591.com.tw/?kind=1&region=3&section=37,38&searchtype=1&area=15,80&showMore=1&multiPrice=10000_20000'
+        self.url = 'https://rent.591.com.tw/?kind=1&region=6&area=15,80&section=75,67,78,79&searchtype=1&rentprice=9000,16000&multiRoom=2,3,4'
         self.item_url_template_prefix = 'https://rent.591.com.tw/rent-detail-'
         self.item_url_template_suffix = '.html'
 
